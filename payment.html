@@ -8,20 +8,29 @@
 <body style="font-family:Arial; background:#FAF8F3; display:flex; justify-content:center; padding:30px;">
 <div style="background:white; max-width:420px; width:100%; padding:30px; border-radius:14px; box-shadow:0 8px 30px rgba(0,0,0,0.08);">
 <h2 style="margin:0;">Activate Workspace</h2>
-<p style="color:#666; font-size:14px;">One-time fee Ksh 150 to unlock task.</p>
+<p style="color:#666; font-size:14px;">Welcome <span id="uname"></span>! Final step to unlock tasks.</p>
 <div style="background:#F5F1E8; padding:12px; border-radius:8px; display:flex; justify-content:space-between; margin:15px 0;">
-<span>Amount</span><b>Ksh 150</b>
+<span>Activation Fee</span><b>Ksh 150</b>
 </div>
 <label style="font-weight:bold; font-size:14px;">Your M-Pesa Number</label>
 <input type="tel" id="phone" placeholder="07XXXXXXXX" style="width:100%; padding:14px; border-radius:10px; border:1px solid #ccc; margin:8px 0 15px 0; font-size:16px; box-sizing:border-box;">
 <button onclick="pay()" id="payBtn" style="background:#00b050; color:white; border:none; padding:15px; border-radius:10px; font-weight:bold; width:100%; font-size:16px; cursor:pointer;">Pay KES 150 - Get M-Pesa Prompt</button>
-<p style="font-size:12px; color:#888; margin-top:12px; text-align:center;">You will receive STK prompt - enter M-Pesa PIN to complete. Money goes to 0791957646</p>
+<div style="background:#E8F5E9; border:1px solid #c8e6c9; padding:10px; border-radius:8px; margin-top:14px; font-size:12px; color:#2E7D32; text-align:center;">
+🔒 Secure M-Pesa STK Push - You will receive prompt to enter PIN
+</div>
+<p style="font-size:11px; color:#999; text-align:center; margin-top:12px;">Verified by Safaricom Daraja API • Instant activation</p>
 <a href="index.html" style="display:block; text-align:center; margin-top:15px; font-size:13px; color:#5D4037;">← Back to Home</a>
 </div>
 <script>
+const urlParams = new URLSearchParams(window.location.search);
+let p = urlParams.get('phone') || localStorage.getItem('workremote_phone') || '';
+if(p) document.getElementById('phone').value = p;
+let u = JSON.parse(localStorage.getItem('workremote_user')||'{}');
+if(u.name) document.getElementById('uname').innerText = u.name;
+
 async function pay(){
  let phone = document.getElementById('phone').value.trim();
- if(!phone || phone.length < 10){ alert("Enter valid M-Pesa number e.g 07..."); return; }
+ if(!phone || phone.length < 10){ alert("Enter valid M-Pesa number"); return; }
  if(phone.startsWith('0')) phone = '254' + phone.substring(1);
  if(phone.startsWith('+')) phone = phone.substring(1);
  document.getElementById('payBtn').innerText = "Sending prompt...";
@@ -33,11 +42,10 @@ async function pay(){
    body: JSON.stringify({ phone: phone, amount: 150 })
   });
   let data = await res.json();
-  console.log(data);
-  alert("✅ Check your phone "+phone+" - Enter M-Pesa PIN now to pay 150");
+  alert("✅ Check your phone - Enter M-Pesa PIN to complete activation");
   document.getElementById('payBtn').innerText = "Prompt Sent - Check Phone";
  }catch(e){
-  alert("Backend waking up... Wait 40 sec and tap again. "+e.message);
+  alert("Backend waking up... Wait 40 sec and tap again.");
   document.getElementById('payBtn').innerText = "Pay KES 150 - Get M-Pesa Prompt";
   document.getElementById('payBtn').disabled = false;
  }
