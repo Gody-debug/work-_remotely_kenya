@@ -1,4 +1,5 @@
-backend/registrations.json
-backend/mpesa-confirmations.json
+ node_modules/
 .env
-node_modules/
+users.json
+.DS_Store
+package-lock.json
