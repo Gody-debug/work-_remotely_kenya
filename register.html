@@ -26,7 +26,8 @@ input, select{width:100%; padding:13px; border-radius:10px; border:1px solid #cc
 <p style="color:#666; font-size:13px;">Join 800+ Kenyans working remotely</p>
 <label>Full Name</label><input id="name" placeholder="John Kamau">
 <label>M-Pesa Phone Number</label><input id="phone" placeholder="07XXXXXXXX">
-<label>Email</label><input id="email" placeholder="john@gmail.com" type="email">
+ <label>Email</label><input id="email" placeholder="john@gmail.com" type="email">
+<label>Create Password</label><input id="pass" type="password" placeholder="At least 6 characters">
 <label>Location</label><input id="loc" value="Kaaga, Eastern">
 <button class="btn" onclick="nextStep(2)">Continue →</button>
 </div>
@@ -70,6 +71,8 @@ function nextStep(n){
   data.name=document.getElementById('name').value;
   data.phone=document.getElementById('phone').value;
   data.email=document.getElementById('email').value;
+    data.password=document.getElementById('pass').value;
+  if(data.password.length < 4){ alert('Password too short'); return; }
   data.loc=document.getElementById('loc').value;
  }
  document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));
