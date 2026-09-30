@@ -2,45 +2,32 @@
 <html>
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Login</title>
-<style>
-body{margin:0;font-family:Arial;background:#f4f1ec;}
-.header{background:#5D4037;color:white;padding:15px;display:flex;justify-content:space-between;align-items:center;}
-.header a{color:white;text-decoration:none;margin-left:15px;font-weight:bold;}
-.box{background:white;max-width:400px;margin:50px auto;padding:25px;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.2);}
-input{width:100%;padding:12px;margin:8px 0;border:1px solid #ccc;border-radius:5px;box-sizing:border-box;}
-.btn{background:#5D4037;color:white;border:none;padding:12px;width:100%;border-radius:5px;cursor:pointer;font-size:16px;}
-.btn:hover{background:#3E2723;}
-h2{color:#5D4037;text-align:center;}
-.error{color:red;font-size:13px;display:none;}
-</style>
+<title>Login - WorkRemote</title>
 </head>
-<body>
-<div class="header">
-<div><b>ONLINE WORKS KENYA</b></div>
-<div><a href="index.html">Home</a> <a href="about.html">About</a> <a href="login.html">Login</a> <a href="register.html">Register</a></div>
-</div>
-<div class="box">
-<h2>Login</h2>
-<input id="email" type="email" placeholder="Email">
-<input id="pass" type="password" placeholder="Password">
-<p id="error" class="error"></p>
-<button class="btn" onclick="login()">Login</button>
-<p style="text-align:center;margin-top:15px;">No account? <a href="register.html" style="color:#5D4037;">Register</a></p>
+<body style="font-family:Arial; background:#FAF8F3; display:flex; justify-content:center; padding:40px;">
+<div style="background:white; max-width:380px; width:100%; padding:30px; border-radius:14px; box-shadow:0 8px 30px rgba(0,0,0,0.08);">
+<h2>Welcome Back</h2>
+<p style="color:#666; font-size:13px;">Login with your registered credentials</p>
+<label>Phone Number</label>
+<input id="phone" style="width:100%; padding:13px; border-radius:10px; border:1px solid #ccc; margin:8px 0 14px 0; box-sizing:border-box;">
+<label>Password</label>
+<input id="pass" type="password" style="width:100%; padding:13px; border-radius:10px; border:1px solid #ccc; margin:8px 0 14px 0; box-sizing:border-box;">
+<button onclick="doLogin()" style="background:#5D4037; color:white; border:none; padding:14px; width:100%; border-radius:10px; font-weight:bold; cursor:pointer;">Login → Dashboard</button>
+<p style="font-size:13px; text-align:center; margin-top:14px;"><a href="register.html" style="color:#5D4037;">No account? Register here</a></p>
+<p id="err" style="color:red; font-size:13px;"></p>
 </div>
 <script>
-function login(){
-var email=document.getElementById('email').value.trim().toLowerCase();
-var pass=document.getElementById('pass').value;
-var err=document.getElementById('error');
-var users=JSON.parse(localStorage.getItem('owk_users')||'[]');
-var found=users.find(u=>u.email===email && u.pass===pass);
-if(!found){
-err.textContent='Wrong email or password, or account does not exist!'; err.style.display='block'; return;
-}
-err.style.display='none';
-alert('Login successful!');
-window.location.href='index.html';
+function doLogin(){
+ let phone=document.getElementById('phone').value.trim();
+ let pass=document.getElementById('pass').value.trim();
+ let saved=JSON.parse(localStorage.getItem('workremote_user')||'{}');
+ // also check if activated
+ let activated=localStorage.getItem('workremote_paid')==='yes';
+ if(!saved.phone){ document.getElementById('err').innerText="No account found on this device. Please register first."; return; }
+ if(saved.phone!==phone && '254'+phone.substring(1)!==saved.phone && phone!==saved.phone){ document.getElementById('err').innerText="Phone not matching registered phone: "+saved.phone; return; }
+ if(saved.password!==pass){ document.getElementById('err').innerText="Wrong password. You set it during registration."; return; }
+ if(!activated){ location.href='payment.html?phone='+phone; return; }
+ location.href='dashboard.html';
 }
 </script>
 </body>
