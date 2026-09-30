@@ -8,6 +8,13 @@
 </head>
 <body style="font-family:'Segoe UI',Arial; margin:0; background:#FAF8F3; color:#333;">
 
+<!-- PHONE BOX - TOP -->
+<div style="background:#e6f4ea; padding:12px; border-radius:10px; margin:10px; border:2px solid #00b050;">
+  <label style="font-weight:bold;">Your M-Pesa Number:</label>
+  <input type="tel" id="phone" placeholder="07xxxxxxxx" style="width:100%; padding:12px; border-radius:8px; border:1px solid #ccc; margin-top:5px; font-size:16px;">
+  <small>Money goes to 0791957646 - Enter PIN when prompt comes</small>
+</div>
+
 <!-- NAV -->
 <div style="background:white; padding:18px 30px; display:flex; justify-content:space-between; align-items:center; box-shadow:0 2px 10px rgba(0,0,0,0.05); position:sticky; top:0; z-index:10;">
   <div style="display:flex; gap:20px; align-items:center;">
@@ -17,7 +24,7 @@
   <div id="authBtn"><a href="payment.html" style="background:#5D4037; color:white; padding:10px 20px; border-radius:25px; text-decoration:none; font-weight:bold; font-size:13px;">Register / Login</a></div>
 </div>
 
-<!-- HERO - USING YOUR FILE NAME  -->
+<!-- HERO -->
 <div style="width:100%; height:520px; background:linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.45)), url('hero.jpg.webp') center/cover no-repeat; display:flex; align-items:center; justify-content:center; text-align:center; padding:20px;">
   <div style="max-width:750px; color:white;">
     <h1 style="font-size:46px; line-height:1.15; margin:0 0 15px 0; text-shadow:0 3px 12px rgba(0,0,0,0.6);">Brighten Your Future by Working Remotely</h1>
@@ -26,30 +33,30 @@
   </div>
 </div>
 
-<!-- STATUS MIDDLE -->
+<!-- STATUS -->
 <div style="max-width:1100px; margin:-30px auto 0 auto; padding:0 20px; position:relative; z-index:5;">
   <div style="background:white; border-radius:14px; padding:26px 28px; box-shadow:0 8px 30px rgba(0,0,0,0.08); border-left:5px solid #2E7D32;">
     <h3 style="margin:0 0 6px 0; color:#5D4037; font-size:17px;"><i class="fa-solid fa-satellite-dish"></i> Platform Description</h3>
    <div class="job-card">
   <h3>Data Entry</h3>
   <p>Earn KES 500 per task</p>
-  <button onclick="window.location.href='jobs.html'">Apply Now</button>
+ <button onclick="pay()" style="background:#00b050; color:white; border:none; padding:14px 20px; border-radius:8px; font-weight:bold; width:100%; cursor:pointer;">Pay KES 150 - Unlock Jobs</button>
 </div>
 <div class="job-card">
   <h3>Transcription</h3>
   <p>Earn KES 800 per task</p>
-  <button onclick="window.location.href='jobs.html'">Apply Now</button>
+ <button onclick="pay()" style="background:#00b050; color:white; border:none; padding:14px 20px; border-radius:8px; font-weight:bold; width:100%; cursor:pointer;">Pay KES 150 - Unlock Jobs</button>
 </div>
   </div>
 </div>
 
-<!-- 8 JOBS WELL SPACED -->
+<!-- JOBS -->
 <div id="jobs" style="max-width:1150px; margin:45px auto; padding:0 25px;">
   <h2 style="color:#5D4037;">Featured Professional Tasks</h2>
   <div id="jobsGrid" style="display:grid; grid-template-columns:repeat(auto-fill,minmax(340px,1fr)); gap:28px; margin-top:22px;"></div>
 </div>
 
-<!-- ABOUT US -->
+<!-- ABOUT -->
 <div id="about" style="background:white; margin-top:60px; padding:55px 25px; border-top:1px solid #eee;">
   <div style="max-width:1100px; margin:auto;">
     <h2 style="color:#5D4037;"><i class="fa-solid fa-users"></i> About Us</h2>
@@ -87,6 +94,32 @@ document.getElementById('jobsGrid').innerHTML = jobs.map(j=>`
     <button onclick="localStorage.setItem('selectedJob',${j.id}); location.href='payment.html?job=${j.id}'" style="width:100%; margin-top:14px; background:#5D4037; color:white; border:none; padding:13px; border-radius:10px; font-weight:bold; cursor:pointer;">Apply for Task →</button>
   </div>
 `).join('');
+
+async function pay() {
+  let phoneEl = document.getElementById('phone');
+  let phone = phoneEl ? phoneEl.value : "";
+  if(!phone || phone.length < 9){ 
+    phone = prompt("Enter M-Pesa phone (07...)"); 
+  }
+  if(!phone) return;
+  if(phone.startsWith('0')) phone = '254' + phone.slice(1);
+  if(phone.startsWith('+')) phone = phone.slice(1);
+  
+  alert("Sending STK prompt to " + phone + " ... Wait 5 sec");
+  
+  try {
+    const res = await fetch('https://online-work-platform.onrender.com/stkpush', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ phone: phone, amount: 150 })
+    });
+    const data = await res.json();
+    console.log(data);
+    alert("✅ Check your phone " + phone + " - Enter M-Pesa PIN. Money goes to 0791957646");
+  } catch(e){
+    alert("Backend waking up (Render sleeps after 15min). Wait 40 sec and tap Pay again. Error: " + e.message);
+  }
+}
 </script>
 </body>
 </html>
