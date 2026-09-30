@@ -8,7 +8,10 @@
 body{font-family:Segoe UI,Arial; background:#FAF8F3; margin:0; display:flex; justify-content:center; padding:25px;}
 .card{background:white; max-width:480px; width:100%; padding:30px; border-radius:14px; box-shadow:0 8px 30px rgba(0,0,0,0.08);}
 .step{display:none;}.step.active{display:block;}
-input, select{width:100%; padding:13px; border-radius:10px; border:1px solid #ccc; margin:8px 0 14px 0; font-size:15px; box-sizing:border-box;}
+input, select{width:100%; padding:13px; border-radius:10px; border:1px solid #ccc; margin:8px 0 4px 0; font-size:15px; box-sizing:border-box;}
+input.error{border-color:#e53935; background:#ffebee;}
+.err{color:#e53935; font-size:11px; margin:2px 0 10px 2px; display:none;}
+.err.show{display:block;}
 .btn{background:#5D4037; color:white; border:none; padding:14px; border-radius:10px; width:100%; font-weight:bold; font-size:15px; cursor:pointer; margin-top:10px;}
 .btn-green{background:#00b050;}
 .opt{border:1px solid #ddd; padding:12px 14px; border-radius:10px; margin:8px 0; cursor:pointer; display:flex; align-items:center; gap:10px;}
@@ -19,17 +22,29 @@ input, select{width:100%; padding:13px; border-radius:10px; border:1px solid #cc
 </head>
 <body>
 <div class="card">
-<div class="progress"><div id="prog"></div></div>
+<div class="progress"><div id="prog" style="width:25%"></div></div>
 
 <div id="step1" class="step active">
 <h2 style="margin:0;">Create Account</h2>
 <p style="color:#666; font-size:13px;">Join 800+ Kenyans working remotely</p>
-<label>Full Name</label><input id="name" placeholder="John Kamau">
-<label>M-Pesa Phone Number</label><input id="phone" placeholder="07XXXXXXXX">
- <label>Email</label><input id="email" placeholder="john@gmail.com" type="email">
-<label>Create Password</label><input id="pass" type="password" placeholder="At least 6 characters">
+<label>Full Name *</label>
+<input id="name" placeholder="John Kamau">
+<div class="err" id="err-name"><i class="fa-solid fa-circle-exclamation"></i> This field can't be left empty</div>
+
+<label>M-Pesa Phone Number *</label>
+<input id="phone" placeholder="07XXXXXXXX">
+<div class="err" id="err-phone"><i class="fa-solid fa-circle-exclamation"></i> This field can't be left empty</div>
+
+<label>Email *</label>
+<input id="email" placeholder="john@gmail.com" type="email">
+<div class="err" id="err-email"><i class="fa-solid fa-circle-exclamation"></i> This field can't be left empty</div>
+
+<label>Create Password *</label>
+<input id="pass" type="password" placeholder="At least 6 characters">
+<div class="err" id="err-pass"><i class="fa-solid fa-circle-exclamation"></i> This field can't be left empty</div>
+
 <label>Location</label><input id="loc" value="Kaaga, Eastern">
-<button class="btn" onclick="nextStep(2)">Continue →</button>
+<button class="btn" onclick="validateStep1()">Continue →</button>
 </div>
 
 <div id="step2" class="step">
@@ -38,18 +53,20 @@ input, select{width:100%; padding:13px; border-radius:10px; border:1px solid #cc
 <div class="opt" onclick="selectOpt(this,'remote','Yes')"><input type="radio" name="remote"> Yes, I have</div>
 <div class="opt" onclick="selectOpt(this,'remote','No')"><input type="radio" name="remote"> No, first time</div>
 <div class="opt" onclick="selectOpt(this,'remote','Some')"><input type="radio" name="remote"> I have done some online tasks</div>
-<button class="btn" onclick="nextStep(3)">Next →</button>
+<div class="err" id="err-remote">Please select one option</div>
+<button class="btn" onclick="validateStep2()">Next →</button>
 </div>
 
 <div id="step3" class="step">
 <h2>Your Skills</h2>
-<p style="color:#666; font-size:14px;">Which tasks can you do well? (Select all)</p>
-<div class="opt" onclick="toggleOpt(this)"><input type="checkbox"> ✍️ Writing & Translation (Swahili/English)</div>
+<p style="color:#666; font-size:14px;">Which tasks can you do well? (Select at least one)</p>
+<div class="opt" onclick="toggleOpt(this)"><input type="checkbox"> ✍️ Writing & Translation</div>
 <div class="opt" onclick="toggleOpt(this)"><input type="checkbox"> 🔍 Research & Fact-checking</div>
 <div class="opt" onclick="toggleOpt(this)"><input type="checkbox"> 🏷️ Data Entry & Image Labeling</div>
 <div class="opt" onclick="toggleOpt(this)"><input type="checkbox"> 🧮 Teaching / Math / KCSE</div>
-<div class="opt" onclick="toggleOpt(this)"><input type="checkbox"> 💬 Understanding Sheng & Kenyan Culture</div>
-<button class="btn" onclick="nextStep(4)">Next →</button>
+<div class="opt" onclick="toggleOpt(this)"><input type="checkbox"> 💬 Sheng & Kenyan Culture</div>
+<div class="err" id="err-skills">Please select at least one skill</div>
+<button class="btn" onclick="validateStep3()">Next →</button>
 </div>
 
 <div id="step4" class="step">
@@ -58,23 +75,33 @@ input, select{width:100%; padding:13px; border-radius:10px; border:1px solid #cc
 <div class="opt" onclick="selectOpt(this,'time','2-3 hrs')"><input type="radio" name="time"> 2-3 hours (part-time)</div>
 <div class="opt" onclick="selectOpt(this,'time','4-6 hrs')"><input type="radio" name="time"> 4-6 hours (most day)</div>
 <div class="opt" onclick="selectOpt(this,'time','8 hrs')"><input type="radio" name="time"> 8 hours (full-time)</div>
+<div class="err" id="err-time">Please select availability</div>
 <button class="btn btn-green" onclick="finishReg()">Complete & Activate Account →</button>
-<p style="font-size:11px; color:#888; text-align:center; margin-top:10px;">Final step: secure your workspace with one-time activation</p>
 </div>
 
 </div>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <script>
 let data={};
+function setErr(id, show){ document.getElementById(id).classList.toggle('show', show); let inpId=id.replace('err-',''); let inp=document.getElementById(inpId); if(inp){ inp.classList.toggle('error', show); } }
+function validateStep1(){
+ let ok=true;
+ ['name','phone','email','pass'].forEach(f=>{
+  let v=document.getElementById(f).value.trim();
+  if(!v){ setErr('err-'+f,true); ok=false; } else { setErr('err-'+f,false); }
+ });
+ if(!ok) return;
+ data.name=document.getElementById('name').value.trim();
+ data.phone=document.getElementById('phone').value.trim();
+ data.email=document.getElementById('email').value.trim();
+ data.password=document.getElementById('pass').value.trim();
+ data.loc=document.getElementById('loc').value;
+ if(data.password.length<4){ setErr('err-pass',true); document.getElementById('err-pass').innerHTML='Password must be at least 4 characters'; return; }
+ nextStep(2);
+}
+function validateStep2(){ if(!data.remote){ document.getElementById('err-remote').classList.add('show'); return; } nextStep(3); }
+function validateStep3(){ let sel=document.querySelectorAll('#step3.opt.selected').length; if(sel==0){ document.getElementById('err-skills').classList.add('show'); return; } nextStep(4); }
 function nextStep(n){
- if(n==2){
-  if(!document.getElementById('name').value ||!document.getElementById('phone').value){ alert('Fill Name and Phone'); return;}
-  data.name=document.getElementById('name').value;
-  data.phone=document.getElementById('phone').value;
-  data.email=document.getElementById('email').value;
-    data.password=document.getElementById('pass').value;
-  if(data.password.length < 4){ alert('Password too short'); return; }
-  data.loc=document.getElementById('loc').value;
- }
  document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));
  document.getElementById('step'+n).classList.add('active');
  document.getElementById('prog').style.width = (n*25)+'%';
@@ -84,12 +111,11 @@ function selectOpt(el,key,val){
  el.classList.add('selected');
  el.querySelector('input').checked=true;
  data[key]=val;
+ document.getElementById('err-'+key)?.classList.remove('show');
 }
-function toggleOpt(el){
- el.classList.toggle('selected');
- el.querySelector('input').checked = el.classList.contains('selected');
-}
+function toggleOpt(el){ el.classList.toggle('selected'); el.querySelector('input').checked = el.classList.contains('selected'); document.getElementById('err-skills').classList.remove('show'); }
 function finishReg(){
+ if(!data.time){ document.getElementById('err-time').classList.add('show'); return; }
  localStorage.setItem('workremote_user', JSON.stringify(data));
  localStorage.setItem('workremote_phone', data.phone);
  location.href='payment.html?phone='+encodeURIComponent(data.phone);
