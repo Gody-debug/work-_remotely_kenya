@@ -43,6 +43,9 @@ async function pay(){
   });
   let data = await res.json();
   alert("✅ Check your phone - Enter M-Pesa PIN to complete activation");
+  localStorage.setItem('workremote_paid','yes');
+  localStorage.setItem('workremote_phone', phone);
+  setTimeout(()=>{ location.href='dashboard.html'; }, 1500);
   document.getElementById('payBtn').innerText = "Prompt Sent - Check Phone";
  }catch(e){
   alert("Backend waking up... Wait 40 sec and tap again.");
