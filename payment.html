@@ -1,46 +1,46 @@
  <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Activate - Ksh 150</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Activate - WorkRemote</title>
 </head>
-<body style="font-family:Arial; margin:0; background:#FAF8F3; display:flex; justify-content:center; align-items:center; min-height:100vh; padding:20px;">
-<div style="background:white; max-width:420px; width:100%; border-radius:16px; padding:30px; box-shadow:0 10px 40px rgba(0,0,0,0.08);">
-  <h2 style="color:#5D4037; margin:0;">Activate Workspace</h2>
-  <p style="color:#666; font-size:13px;">One-time fee Ksh 150 to unlock your task.</p>
-  <div style="background:#F5F1E8; padding:14px; border-radius:10px; display:flex; justify-content:space-between; margin:18px 0;"><span>Amount</span><b style="color:#5D4037; font-size:18px;">Ksh 150</b></div>
-
-  <div style="background:#E8F5E9; padding:16px; border-radius:10px; margin-bottom:18px; border:1px solid #A5D6A7;">
-    <p style="margin:0 0 8px 0; font-size:13px; font-weight:bold; color:#2E7D32;">📱 Send via M-Pesa:</p>
-    <p style="margin:0; font-size:14px; line-height:1.7;">
-      1. M-Pesa → Send Money<br>
-      2. Phone: <b style="font-size:18px; color:#000;">0791957646</b><br>
-      3. Amount: <b>150</b><br>
-      4. Enter PIN → Send
-    </p>
-    <p style="margin:10px 0 0 0; font-size:11px; color:#555; background:white; padding:8px; border-radius:6px;">You will receive SMS code like QGH7... Enter it below</p>
-  </div>
-
-  <label style="font-size:12px; font-weight:bold;">Your M-Pesa Number</label>
-  <input id="phone" placeholder="07XXXXXXXX" style="width:100%; padding:12px; border:1px solid #ddd; border-radius:8px; margin:6px 0 14px 0; box-sizing:border-box;">
-  <label style="font-size:12px; font-weight:bold;">M-Pesa Transaction Code</label>
-  <input id="code" placeholder="e.g. QGH7R5T2K1" style="width:100%; padding:12px; border:1px solid #ddd; border-radius:8px; margin:6px 0 18px 0; box-sizing:border-box;">
-  <button onclick="activate()" style="width:100%; background:#2E7D32; color:white; border:none; padding:14px; border-radius:10px; font-weight:bold; cursor:pointer; font-size:15px;">✓ I Have Sent Ksh 150</button>
-  <p id="msg" style="text-align:center; font-size:13px; margin-top:12px; font-weight:bold;"></p>
-  <p style="text-align:center; margin-top:18px;"><a href="index.html" style="font-size:12px; color:#5D4037;">← Back to Home</a></p>
+<body style="font-family:Arial; background:#FAF8F3; display:flex; justify-content:center; padding:30px;">
+<div style="background:white; max-width:420px; width:100%; padding:30px; border-radius:14px; box-shadow:0 8px 30px rgba(0,0,0,0.08);">
+<h2 style="margin:0;">Activate Workspace</h2>
+<p style="color:#666; font-size:14px;">One-time fee Ksh 150 to unlock task.</p>
+<div style="background:#F5F1E8; padding:12px; border-radius:8px; display:flex; justify-content:space-between; margin:15px 0;">
+<span>Amount</span><b>Ksh 150</b>
+</div>
+<label style="font-weight:bold; font-size:14px;">Your M-Pesa Number</label>
+<input type="tel" id="phone" placeholder="07XXXXXXXX" style="width:100%; padding:14px; border-radius:10px; border:1px solid #ccc; margin:8px 0 15px 0; font-size:16px; box-sizing:border-box;">
+<button onclick="pay()" id="payBtn" style="background:#00b050; color:white; border:none; padding:15px; border-radius:10px; font-weight:bold; width:100%; font-size:16px; cursor:pointer;">Pay KES 150 - Get M-Pesa Prompt</button>
+<p style="font-size:12px; color:#888; margin-top:12px; text-align:center;">You will receive STK prompt - enter M-Pesa PIN to complete. Money goes to 0791957646</p>
+<a href="index.html" style="display:block; text-align:center; margin-top:15px; font-size:13px; color:#5D4037;">← Back to Home</a>
 </div>
 <script>
-function activate(){
-  const phone=document.getElementById('phone').value.trim();
-  const code=document.getElementById('code').value.trim();
-  if(phone.length<10){ document.getElementById('msg').innerHTML="<span style='color:red;'>Enter valid M-Pesa number</span>"; return; }
-  if(code.length<6){ document.getElementById('msg').innerHTML="<span style='color:red;'>Enter M-Pesa code</span>"; return; }
-  localStorage.setItem('workremote_user',phone);
-  localStorage.setItem('workremote_paid','150');
-  localStorage.setItem('workremote_code',code);
-  localStorage.setItem('admin_notify_phone','0791957646');
-  document.getElementById('msg').innerHTML="<span style='color:green;'>✓ Verified! Opening dashboard...</span>";
-  setTimeout(()=>{ location.href='dashboard.html'; },1500);
+async function pay(){
+ let phone = document.getElementById('phone').value.trim();
+ if(!phone || phone.length < 10){ alert("Enter valid M-Pesa number e.g 07..."); return; }
+ if(phone.startsWith('0')) phone = '254' + phone.substring(1);
+ if(phone.startsWith('+')) phone = phone.substring(1);
+ document.getElementById('payBtn').innerText = "Sending prompt...";
+ document.getElementById('payBtn').disabled = true;
+ try{
+  let res = await fetch('https://online-work-platform.onrender.com/stkpush', {
+   method:'POST',
+   headers:{'Content-Type':'application/json'},
+   body: JSON.stringify({ phone: phone, amount: 150 })
+  });
+  let data = await res.json();
+  console.log(data);
+  alert("✅ Check your phone "+phone+" - Enter M-Pesa PIN now to pay 150");
+  document.getElementById('payBtn').innerText = "Prompt Sent - Check Phone";
+ }catch(e){
+  alert("Backend waking up... Wait 40 sec and tap again. "+e.message);
+  document.getElementById('payBtn').innerText = "Pay KES 150 - Get M-Pesa Prompt";
+  document.getElementById('payBtn').disabled = false;
+ }
 }
 </script>
 </body>
